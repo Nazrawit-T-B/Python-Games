@@ -68,7 +68,13 @@ def coverSquares(screen):
             pygame.draw.rect(screen, NAVY, rect,border_radius=5) 
     pygame.display.update(rect)
     #clock.tick(50)
-    return board 
+    return board
+
+def hasWon(matched):
+    for row in matched:
+        if False in row:
+            return False
+    return True 
 #main game logic
 def main():
     display=pygame.display.set_mode((Wwidth,Wheight))
@@ -76,6 +82,7 @@ def main():
     pygame.display.set_icon(icon)
     display.fill(WHITE)
     board=coverSquares(display)
+    start_time=pygame.time.get_ticks()
     #create an event that detects a cursor action and behaves
     revealed=[[False]*NBoxesHorizontally for i in range(NBoxesVertically)]
     matched=[[False]*NBoxesHorizontally for i in range(NBoxesVertically)]
