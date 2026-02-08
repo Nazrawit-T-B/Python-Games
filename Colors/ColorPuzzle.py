@@ -65,7 +65,7 @@ def coverSquares(screen):
             x = Xmargin + i*(Box+Gap) 
             y = Ymargin + j*(Box+Gap) 
             rect = pygame.Rect(x, y, Box, Box) 
-            pygame.draw.rect(screen, BLACK, rect,border_radius=5) 
+            pygame.draw.rect(screen, NAVY, rect,border_radius=5) 
     pygame.display.update(rect)
     #clock.tick(50)
     return board 
@@ -76,11 +76,44 @@ def main():
     pygame.display.set_icon(icon)
     display.fill(WHITE)
     board=coverSquares(display)
+    #create an event that detects a cursor action and behaves
+    revealed=[[False]*NBoxesHorizontally for i in range(NBoxesVertically)]
+    matched=[[False]*NBoxesHorizontally for i in range(NBoxesVertically)]
+    selected=[]
     while True:
         for event in pygame.event.get():
             if event.type==QUIT:
                 pygame.quit()
                 sys.exit()
+            elif event.type==MOUSEBUTTONDOWN:
+                x,y=event.pos
+                for i in range(NBoxesHorizontally):
+                    for j in range(NBoxesVertically):
+                        box_x = Xmargin + i*(Box+Gap) 
+                        box_y = Ymargin + j*(Box+Gap) 
+                        if box_x <= x < box_x + Box and box_y <= y < box_y + Box:
+                            if not revealed[j][i] and not matched[j][i]:
+                                revealed[j][i] = True
+                                selected.append((j, i))
+                                rect = pygame.Rect(box_x, box_y, Box, Box) 
+                                pygame.draw.rect(display, board[j][i], rect,border_radius=5) 
+                                pygame.display.update(rect)
+                                if len(selected) == 2:
+                                    j1, i1 = selected[0]
+                                    j2, i2 = selected[1]
+                                    if board[j1][i1] == board[j2][i2]:
+                                        matched[j1][i1] = True
+                                        matched[j2][i2] = True
+                                    else:
+                                        pygame.time.delay(1000)
+                                        for j_sel, i_sel in selected:
+                                            revealed[j_sel][i_sel] = False
+                                            box_x_sel = Xmargin + i_sel*(Box+Gap) 
+                                            box_y_sel = Ymargin + j_sel*(Box+Gap) 
+                                            rect_sel = pygame.Rect(box_x_sel, box_y_sel, Box, Box) 
+                                            pygame.draw.rect(display, NAVY, rect_sel,border_radius=5) 
+                                            pygame.display.update(rect_sel)
+                                    selected.clear()
         pygame.display.update()
 
 if __name__=='__main__':
