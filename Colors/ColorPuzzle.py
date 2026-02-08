@@ -5,10 +5,11 @@ pygame.init()
 #Constants defining the width and height of parameters
 Wwidth=640
 Wheight=480
-Box=60
+Box=80
 Gap=10
 NBoxesHorizontally=4
 NBoxesVertically=4
+showing_time=8
 Xmargin=int((Wwidth-(NBoxesHorizontally*(Box+Gap)))/2)
 Ymargin=int((Wheight-(NBoxesVertically*(Box+Gap)))/2)
 
@@ -17,11 +18,12 @@ WHITE=(255,255,255)
 BLUE=(0,255,255)
 GRAY=(100,100,100)
 NAVY=(60,60,100)
-
+BLACK=(0,0,0)
 BgColor=NAVY
 LightBg=GRAY
-BoxColor=WHITE
+BoxColor=BLACK
 HighLightC=BLUE
+icon=pygame.image.load('Colors\icon.png')
 
 def generateColors():
     return ((random.randint(0,255),random.randint(0,255),random.randint(0,255)))
@@ -36,21 +38,44 @@ def coloredSquares(screen):
     num=int(NBoxesHorizontally*NBoxesVertically/2)
     items=items[:num]*2
     random.shuffle(items)
+    board=[]
     index = 0 
-    for i in range(NBoxesHorizontally): 
-        for j in range(NBoxesVertically): 
+    for j in range(NBoxesVertically): 
+        column=[]
+        for i in range(NBoxesHorizontally): 
             x = Xmargin + i*(Box+Gap) 
             y = Ymargin + j*(Box+Gap) 
             rect = pygame.Rect(x, y, Box, Box) 
-            pygame.draw.rect(screen, items[index], rect) 
+            pygame.draw.rect(screen, items[index], rect,border_radius=5) 
+            column.append(items[index])
             index += 1
-    return 
+        board.append(column)
+            
+    return board
+def coverSquares(screen):
+    #logic that covers the squares created after some while time
+    #creates the squares and then covers them in this function 
+    board=coloredSquares(screen)
+    pygame.display.update()
+    pygame.time.delay(3000)
+    clock=pygame.time.Clock()
+    #cover all the square to black
+    for i in range(NBoxesHorizontally):
+        for j in range(NBoxesVertically):
+            x = Xmargin + i*(Box+Gap) 
+            y = Ymargin + j*(Box+Gap) 
+            rect = pygame.Rect(x, y, Box, Box) 
+            pygame.draw.rect(screen, BLACK, rect,border_radius=5) 
+    pygame.display.update(rect)
+    #clock.tick(50)
+    return board 
 #main game logic
 def main():
     display=pygame.display.set_mode((Wwidth,Wheight))
     pygame.display.set_caption('Color Match')
-    display.fill(LightBg)
-    coloredSquares(display)
+    pygame.display.set_icon(icon)
+    display.fill(WHITE)
+    board=coverSquares(display)
     while True:
         for event in pygame.event.get():
             if event.type==QUIT:
