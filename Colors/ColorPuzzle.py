@@ -75,6 +75,9 @@ def hasWon(matched):
         if False in row:
             return False
     return True 
+def resert():
+    #logic that reset all the game states and also stores previous time always
+    return 
 #main game logic
 def main():
     display=pygame.display.set_mode((Wwidth,Wheight))
@@ -87,7 +90,12 @@ def main():
     revealed=[[False]*NBoxesHorizontally for i in range(NBoxesVertically)]
     matched=[[False]*NBoxesHorizontally for i in range(NBoxesVertically)]
     selected=[]
-    while True:
+    game_won=False
+    final_time=None
+    while True:   
+        font=pygame.font.SysFont(None, 36)
+        text=font.render(f"TIME TAKEN:", True, NAVY)
+        display.blit(text, (Wwidth//3.5 - text.get_width()//2, 20)) 
         for event in pygame.event.get():
             if event.type==QUIT:
                 pygame.quit()
@@ -121,6 +129,13 @@ def main():
                                             pygame.draw.rect(display, NAVY, rect_sel,border_radius=5) 
                                             pygame.display.update(rect_sel)
                                     selected.clear()
+        if not game_won and hasWon(matched):
+            game_won = True
+            final_time = (pygame.time.get_ticks() - start_time) // 1000
+        if game_won:
+            font=pygame.font.SysFont(None, 36)
+            text = font.render(f" {final_time} seconds!", True, NAVY)
+            display.blit(text, ((Wwidth//2.35 - text.get_width()//2), 20))                                
         pygame.display.update()
 
 if __name__=='__main__':
